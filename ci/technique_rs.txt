@@ -1,0 +1,54 @@
+// This file is generated from vendor/vmaware.hpp.
+// Do not edit manually. Run ci/update-vmaware.sh.
+
+use crate::ffi;
+
+/// Every detection technique vmaware exposes, in the same order as the C++ `enum_flags`.
+///
+/// The discriminant value matches the C++ enum value and is passed directly across the FFI.
+#[repr(u8)]
+#[non_exhaustive]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Technique {
+    %tech%
+}
+
+impl Technique {
+    pub const ALL: &'static [Self] = &[
+        %tech_all%
+    ];
+
+    pub fn from_u8(value: u8) -> Option<Self> {
+        Self::ALL
+            .iter()
+            .copied()
+            .find(|technique| *technique as u8 == value)
+    }
+
+    pub const fn as_u8(self) -> u8 {
+        self as u8
+    }
+
+    pub fn name(self) -> String {
+        ffi::vm_flag_to_string(self.as_u8())
+    }
+}
+
+#[test]
+fn technique_all_is_valid() {
+    use std::collections::HashSet;
+
+    let mut seen = HashSet::new();
+
+    for technique in Technique::ALL.iter().copied() {
+        assert!(
+            seen.insert(technique.as_u8()),
+            "duplicate technique discriminant: {}",
+            technique.as_u8()
+        );
+
+        assert_eq!(Technique::from_u8(technique.as_u8()), Some(technique));
+
+        assert_ne!(technique.name(), "Unknown flag");
+    }
+}

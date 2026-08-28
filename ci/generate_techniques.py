@@ -106,7 +106,8 @@ def main() -> None:
     if "%tech%" in generated or "%tech_all%" in generated:
         raise SystemExit(f"{TEMPLATE}: failed to replace template markers")
 
-    OUT.write_text(generated, encoding="utf-8")
+    with OUT.open("w", encoding="utf-8", newline="\n") as output:
+        output.write(generated)
     print(f"generated {OUT} with {len(techniques)} techniques")
 
 

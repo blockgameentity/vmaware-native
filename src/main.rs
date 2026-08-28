@@ -1,4 +1,4 @@
-use vmaware_native::{check, query, Technique};
+use vmaware_native::{Technique, check, query};
 
 fn main() {
     // Run the full scan once so vmaware caches all results internally.
@@ -6,8 +6,14 @@ fn main() {
 
     println!("=== vmaware scan results ===");
     println!("  VM detected : {}", info.is_vm);
-    println!("  Brand       : {}", info.brand.as_deref().unwrap_or("Unknown"));
-    println!("  Type        : {}", info.vm_type.as_deref().unwrap_or("Unknown"));
+    println!(
+        "  Brand       : {}",
+        info.brand.as_deref().unwrap_or("Unknown")
+    );
+    println!(
+        "  Type        : {}",
+        info.vm_type.as_deref().unwrap_or("Unknown")
+    );
     println!("  Certainty   : {}%", info.percentage);
     println!("  Hardened    : {}", info.is_hardened);
     println!("  Conclusion  : {}", info.conclusion);
@@ -19,24 +25,26 @@ fn main() {
 
     println!("=== individual technique results ===");
     let all = Technique::ALL;
-    let name_width = all
-        .iter()
-        .map(|t| t.name().len())
-        .max()
-        .unwrap_or(0);
+    let name_width = all.iter().map(|t| t.name().len()).max().unwrap_or(0);
 
     let mut detected = Vec::new();
     let mut not_detected = Vec::new();
 
     for technique in all {
-        let result = check(technique.clone());
+        let result = check(*technique);
         if result {
             detected.push(technique.name());
         } else {
             not_detected.push(technique.name());
         }
         let marker = if result { "[+]" } else { "[ ]" };
-        println!("  {} {:<width$}  {}", marker, technique.name(), result, width = name_width);
+        println!(
+            "  {} {:<width$}  {}",
+            marker,
+            technique.name(),
+            result,
+            width = name_width
+        );
     }
 
     println!();

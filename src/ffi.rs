@@ -1,5 +1,5 @@
 #[cxx::bridge]
-mod ffi {
+mod bridge {
     unsafe extern "C++" {
         include!("bridge.hpp");
 
@@ -17,4 +17,4 @@ mod ffi {
     }
 }
 
-pub(crate) use ffi::*;
+pub(crate) use bridge::*;

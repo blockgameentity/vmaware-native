@@ -13,6 +13,7 @@ pub struct VmInfo {
     pub is_hardened: bool,
     pub percentage: u8,
     pub detected_count: u8,
+    /// VMAware's total, including reserved enum slots and registered custom techniques.
     pub technique_count: u16,
     pub detected_techniques: Vec<Technique>,
 }
@@ -115,7 +116,10 @@ mod tests {
         let info = query();
         assert!(info.percentage <= 100);
         assert!(info.technique_count > 0);
+        // VMAware's total includes reserved enum slots and registered custom techniques.
+        assert!(Technique::ALL.len() <= info.technique_count as usize);
         assert!(info.detected_count <= info.technique_count as u8);
+        assert_eq!(info.detected_techniques.len(), info.detected_count as usize);
     }
 
     #[test]

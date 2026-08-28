@@ -30,7 +30,7 @@ uint8_t vm_detected_count() {
 }
 
 uint16_t vm_technique_count() {
-    return static_cast<uint16_t>(VM::technique_count.load());
+    return static_cast<uint16_t>(VM::technique_count);
 }
 
 bool vm_check(uint8_t flag) {

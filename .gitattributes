@@ -1,0 +1,10 @@
+# Keep executable CI scripts portable when the repository is checked out on Windows.
+*.sh text eol=lf
+*.py text eol=lf
+*.rs text eol=lf
+*.cpp text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# The updater verifies this asset byte-for-byte against GitHub's release digest.
+vendor/vmaware.hpp -text

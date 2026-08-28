@@ -6,25 +6,35 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+
+concurrency:
+  group: update-vmaware
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      changed: ${{ steps.changes.outputs.changed }}
+      artifact_available: ${{ steps.artifact.outputs.available }}
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
         with:
           toolchain: stable
           components: rustfmt
 
       - name: Check for and validate upstream update
+        env:
+          GITHUB_TOKEN: ""
         run: bash ci/update-vmaware.sh
 
       - name: Detect generated changes
@@ -40,9 +50,67 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Open update pull request
+      - name: Check artifact service availability
+        id: artifact
         if: steps.changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        shell: bash
+        run: |
+          if [[ -n "${ACTIONS_RUNTIME_TOKEN:-}" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "No artifact service is available; generated changes will not be handed off by this local run."
+          fi
+
+      - name: Upload generated update
+        if: steps.changes.outputs.changed == 'true' && steps.artifact.outputs.available == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: vmaware-update
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            src/technique.rs
+            vendor/vmaware.hpp
+            vendor/vmaware.sha256
+
+  publish:
+    needs: update
+    if: needs.update.outputs.changed == 'true' && needs.update.outputs.artifact_available == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Download generated update
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: vmaware-update
+          path: .
+
+      - name: Check pull request token availability
+        id: token
+        shell: bash
+        env:
+          UPDATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -n "$UPDATE_TOKEN" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "No GITHUB_TOKEN is available; generated changes will not be published by this local run."
+          fi
+
+      - name: Open update pull request
+        if: steps.token.outputs.available == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: update vendored VMAware"
@@ -50,7 +118,7 @@ jobs:
           delete-branch: true
           title: "chore: update vendored VMAware"
           body: |
-            Updates `vendor/vmaware.hpp` from kernelwernel/VMAware,
+            Updates `vendor/vmaware.hpp` from NotRequiem/VMAware,
             regenerates `src/technique.rs`, and records the new SHA-256 checksum.
           labels: dependencies
           add-paths: |

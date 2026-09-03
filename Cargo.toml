@@ -1,5 +1,5 @@
 [package]
-name = "vmaware-native"
+name = "vmaware"
 version = "0.1.0"
 edition = "2024"
 

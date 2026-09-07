@@ -21,7 +21,7 @@ if (( ${#cxx_command[@]} == 0 )); then
     exit 1
 fi
 
-for required_command in curl sha256sum awk grep install tr mktemp git python3 rustfmt cargo; do
+for required_command in curl sha256sum awk grep install tr mktemp git python3; do
     command -v "$required_command" >/dev/null 2>&1 || {
         echo "required command not found: $required_command" >&2
         exit 1
@@ -166,14 +166,7 @@ fi
 test "$(sha256sum "$HEADER" | awk '{print $1}')" = "$upstream_checksum"
 ! grep -qE '%tech(_all)?%' "$ROOT/src/technique.rs"
 
-(
-    cd "$ROOT"
-    rustfmt --check src/technique.rs
-    cargo test --all-targets
-    git diff --check -- \
-        src/technique.rs \
-        vendor/vmaware.sha256
-)
+# Formatting and tests run on the resulting pull request via ci.yml.
 
 if [[ "$release_checksum" == "$expected_checksum" ]]; then
     echo "validated vendored VMAware header and generated bindings ($upstream_checksum)"

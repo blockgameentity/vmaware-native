@@ -76,9 +76,12 @@ def read_techniques(path: Path) -> list[tuple[int, str, str]]:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: generate_techniques.py /path/to/vmaware-techniques.tsv")
+    if len(sys.argv) not in (2, 3):
+        raise SystemExit(
+            "usage: generate_techniques.py /path/to/techniques.tsv [OUT]"
+        )
 
+    out = Path(sys.argv[2]) if len(sys.argv) == 3 else OUT
     techniques = read_techniques(Path(sys.argv[1]))
     template = TEMPLATE.read_text(encoding="utf-8")
 
@@ -106,9 +109,9 @@ def main() -> None:
     if "%tech%" in generated or "%tech_all%" in generated:
         raise SystemExit(f"{TEMPLATE}: failed to replace template markers")
 
-    with OUT.open("w", encoding="utf-8", newline="\n") as output:
+    with out.open("w", encoding="utf-8", newline="\n") as output:
         output.write(generated)
-    print(f"generated {OUT} with {len(techniques)} techniques")
+    print(f"generated {out} with {len(techniques)} techniques")
 
 
 if __name__ == "__main__":

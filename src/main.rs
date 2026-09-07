@@ -1,4 +1,4 @@
-use vmaware::{check, query, Technique};
+use vmaware::{Technique, check, query};
 
 fn main() {
     // Run the full scan once so vmaware caches all results internally.

@@ -1,4 +1,4 @@
-use vmaware_native::{Technique, check, query};
+use vmaware::{Technique, check, query};
 
 fn main() {
     // Run the full scan once so vmaware caches all results internally.

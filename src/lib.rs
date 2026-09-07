@@ -78,7 +78,7 @@ pub fn check(technique: Technique) -> bool {
 ///
 /// # Example
 /// ```
-/// let info = vmaware_native::query();
+/// let info = vmaware::query();
 /// println!("VM: {} ({}%)", info.is_vm, info.percentage);
 /// println!("Brand: {}", info.brand.as_deref().unwrap_or("Unknown"));
 /// println!("Type:  {}", info.vm_type.as_deref().unwrap_or("Unknown"));

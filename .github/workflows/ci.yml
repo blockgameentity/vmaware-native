@@ -18,10 +18,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
@@ -34,16 +34,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           components: clippy
 
       - name: Cache Cargo dependencies
-        uses: actions/cache@70463372260e90a71aa27dab21b2827a49c8614 # v4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
@@ -61,7 +61,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Check vendored header and generated bindings
         run: python3 ci/check-vendor.py
@@ -75,10 +75,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           cache: true
@@ -95,10 +95,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           cache: true

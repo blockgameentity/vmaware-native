@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           components: rustfmt
@@ -36,7 +36,7 @@ jobs:
         run: bash ci/update-vmaware.sh
 
       - name: Open update pull request
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: update vendored VMAware"

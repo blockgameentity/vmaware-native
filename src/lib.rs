@@ -10,6 +10,13 @@ pub struct VmInfo {
     pub vm_type: Option<String>,
     pub conclusion: String,
     pub is_vm: bool,
+    /// Always `false`: upstream `VM::is_hardened()` is deprecated
+    /// (scheduled for removal post-2.8.1, "use `detect()` instead")
+    /// and is currently stubbed to return `false`.
+    #[deprecated(
+        since = "0.1.0",
+        note = "upstream VMAware deprecated `VM::is_hardened()` (scheduled for removal post-2.8.1, use `detect()` instead) and it always returns false"
+    )]
     pub is_hardened: bool,
     pub percentage: u8,
     pub detected_count: u8,
@@ -53,7 +60,13 @@ pub fn conclusion() -> String {
     ffi::vm_conclusion()
 }
 
-/// Returns `true` when anti-VM hardening artefacts are detected.
+/// Deprecated: upstream `VM::is_hardened()` is deprecated (scheduled for removal
+/// post-2.8.1, "use `detect()` instead") and is currently stubbed to always
+/// return `false`. This wrapper is kept for compatibility and always returns `false`.
+#[deprecated(
+    since = "0.1.0",
+    note = "upstream VMAware deprecated `VM::is_hardened()` (scheduled for removal post-2.8.1, use `detect()` instead) and it always returns false"
+)]
 pub fn is_hardened() -> bool {
     ffi::vm_is_hardened()
 }
@@ -84,6 +97,7 @@ pub fn check(technique: Technique) -> bool {
 /// println!("Type:  {}", info.vm_type.as_deref().unwrap_or("Unknown"));
 /// println!("Conclusion: {}", info.conclusion);
 /// ```
+#[allow(deprecated)]
 pub fn query() -> VmInfo {
     let detected_techniques = ffi::vm_detected_techniques()
         .iter()

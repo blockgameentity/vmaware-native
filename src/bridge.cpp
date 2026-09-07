@@ -1,5 +1,22 @@
 #include "bridge.hpp"
+
+// vendor/vmaware.hpp is third-party upstream code validated by checksum, so
+// silence its internal warnings here instead of editing the vendored file.
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push, 0)
+#endif
 #include "vmaware.hpp"
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 bool vm_detect() {
     return VM::detect();
@@ -22,7 +39,11 @@ rust::String vm_conclusion() {
 }
 
 bool vm_is_hardened() {
-    return VM::is_hardened();
+    // Upstream VM::is_hardened() is deprecated (scheduled for removal
+    // post-2.8.1, "use detect() instead") and is currently stubbed to always
+    // return false (see vendor/vmaware.hpp and VM::vmaware::initialise()).
+    // Don't call it so we stay warning-free and survive its future removal.
+    return false;
 }
 
 uint8_t vm_detected_count() {

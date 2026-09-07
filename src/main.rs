@@ -1,8 +1,12 @@
-use vmaware::{Technique, check, query};
+use vmaware::{check, query, Technique};
 
 fn main() {
     // Run the full scan once so vmaware caches all results internally.
     let info = query();
+
+    // `is_hardened` is deprecated upstream but still displayed for compatibility.
+    #[allow(deprecated)]
+    let hardened = info.is_hardened;
 
     println!("=== vmaware scan results ===");
     println!("  VM detected : {}", info.is_vm);
@@ -15,7 +19,7 @@ fn main() {
         info.vm_type.as_deref().unwrap_or("Unknown")
     );
     println!("  Certainty   : {}%", info.percentage);
-    println!("  Hardened    : {}", info.is_hardened);
+    println!("  Hardened    : {}", hardened);
     println!("  Conclusion  : {}", info.conclusion);
     println!(
         "  Detections  : {}/{}",
